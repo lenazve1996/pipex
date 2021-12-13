@@ -13,12 +13,17 @@ int main(int argc, char **argv)
 	int j;
 	int x;
 	int y;
+	int n;
 	int pids[PROCESS_NUM];
+	char	**cmd1;
 	int input_fd;
+	int output_fd;
+	int new_out_fd;
 	char	*line;
 	char	buff[100];
 	int		read_result;
 
+	
 	// if (argc < 5)
 	//{
 	//	ft_putstr_fd("The number of arguments should be at least 4\n", 2);
@@ -56,13 +61,24 @@ int main(int argc, char **argv)
 				j++;
 			}
 			line = malloc(1);
-			while (line != NULL)
-			{
-				free(line);
-				line = NULL;
-				line = get_next_line(pipes[i][0]);
-				printf("Child readed %s\n", line);
-			}
+			dup2(pipes[i][0], 0);
+			//while (line != NULL)
+			//{
+			//	free(line);
+			//	line = NULL;
+			//	line = get_next_line(pipes[i][0]);
+			//	printf("(%d) read %s", i, line);
+			//	//write(1, line, ft_strlen(line));
+			//	if (write(pipes[i + 1][1], line, ft_strlen(line)) == -1)
+			//	{
+			//		perror("Write failed");
+			//		exit(EXIT_FAILURE);
+			//	}
+			//	printf("(%d) Sent %s\n", i, line);
+			//}
+			n = execve("/usr/bin/wc", cmd1, (void *)0);
+			if (n == -1)
+				perror("Execve failed");
 			//read_result = read(pipes[i][0], buff, 100);
 			//if (read_result == -1)
 			//{
@@ -70,14 +86,14 @@ int main(int argc, char **argv)
 			//	exit(EXIT_FAILURE);
 			//}
 			//buff[read_result] = '\0';
-			printf("(%d) Got %s\n", i, buff);
+			//printf("(%d) Got %s\n", i, buff);
 			//x++;
-			if (write(pipes[i + 1][1], buff, ft_strlen(buff)) == -1)
-			{
-				perror("Write failed");
-				exit(EXIT_FAILURE);
-			}
-			printf("(%d) Sent %s\n", i, buff);
+			//if (write(pipes[i + 1][1], buff, ft_strlen(buff)) == -1)
+			//{
+			//	perror("Write failed");
+			//	exit(EXIT_FAILURE);
+			//}
+			//printf("(%d) Sent %s\n", i, buff);
 			close(pipes[i][0]);
 			close(pipes[i + 1][1]);
 			return (0);
@@ -132,7 +148,11 @@ int main(int argc, char **argv)
 		perror("Main Read failed");
 		exit(EXIT_FAILURE);
 	}
+	output_fd = open("outfile", O_WRONLY | O_CREAT, 0777);
+	new_out_fd = dup2(output_fd, 1);
+	write(1, line, ft_strlen(line));
 	printf("Main recieved the final result. It is %s\n", line);
+	close(output_fd);
 	if (close(pipes[PROCESS_NUM][0]) == -1)
 		perror("Close failed");
 	i = 0;
