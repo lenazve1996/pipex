@@ -1,6 +1,17 @@
-  PID TTY           TIME CMD
- 6887 ttys000    0:00.01 /bin/zsh -l
- 7804 ttys001    0:00.98 /bin/zsh -l
-82794 ttys001    0:00.00 ./pipex infile cat cat -e ps outfile
-82795 ttys001    0:00.00 (cat)
-82796 ttys001    0:00.00 (cat)
+total 224
+drwxr-xr-x  16 ayajirob  student    544 Dec 14 20:07 .
+drwxr-xr-x   7 ayajirob  student    238 Dec 13 13:11 ..
+-rw-r--r--@  1 ayajirob  student   6148 Dec 13 13:48 .DS_Store
+drwxr-xr-x  12 ayajirob  student    408 Dec 14 18:37 .git
+-rwxr-xr-x   1 ayajirob  student  13948 Dec 14 15:03 a.out
+-rw-r--r--   1 ayajirob  student   2507 Dec 14 17:45 get_next_line.c
+-rw-r--r--   1 ayajirob  student   1557 Dec 14 17:45 get_next_line.h
+-rw-r--r--   1 ayajirob  student   2534 Dec 14 17:45 get_next_line_utils.c
+-rwxrwxrwx   1 ayajirob  student     21 Dec 13 15:10 infile
+-rw-r--r--   1 ayajirob  student  31592 Dec 12 19:36 libft.a
+-rw-r--r--   1 ayajirob  student   2976 Dec 14 17:47 libft.h
+-rw-r--r--   1 ayajirob  student    146 Dec 14 18:46 oufile
+-rwxr-xr-x   1 ayajirob  student      0 Dec 14 20:07 outfile
+-rwxr-xr-x   1 ayajirob  student  28276 Dec 14 20:07 pipex
+-rw-r--r--   1 ayajirob  student   3120 Dec 14 20:07 pipex.c
+drwxr-xr-x   3 ayajirob  student    102 Dec 14 17:43 pipex.dSYM

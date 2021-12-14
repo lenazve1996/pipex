@@ -4,9 +4,62 @@
 #include <fcntl.h>
 #include "get_next_line.h"
 
+void	ft_close_unused_pipes(int i, int **pipes, int process_num, char c)
+{
+	int	j;
+
+	j = 0;
+	if (c == 'c')
+	{
+		while (j < process_num + 1)
+		{
+			if (i != j)
+				close(pipes[j][0]);
+			if (i + 1 != j)
+				close(pipes[j][1]);
+			j++;
+		}
+	}
+	else if (c == 'p')
+	{
+		while (j < process_num + 1)
+		{
+			if (j != process_num)
+				close(pipes[j][0]);
+			if (j != 0)
+				close(pipes[j][1]);
+			j++;
+		}
+	}
+}
+
+void	ft_read_in_loop(int in_fd, int out_fd)
+{
+	char	*line;
+	line = malloc(1);
+	while (line)
+	{
+		free(line);
+		line = NULL;
+		line = get_next_line(in_fd);
+		if (line != NULL)
+		{
+			if (write(out_fd, line, ft_strlen(line)) == -1)
+			{
+				perror("Write failed");
+				exit(EXIT_FAILURE);
+			}
+		}
+	}
+	if (close(in_fd) == -1)
+		perror("Close failed");
+	if (close(out_fd) == -1)
+		perror("Close failed");
+}
+
 int main(int argc, char **argv)
 {
-	int pipes[argc - 3 + 1][2];
+	int **pipes;
 	int i;
 	int j;
 	int x;
@@ -19,9 +72,7 @@ int main(int argc, char **argv)
 	char	***array;
 	int 	input_fd;
 	int 	output_fd;
-	int 	new_out_fd;
 	char	*line;
-	char	buff[100];
 	int		read_result;
 
 	if (argc < 5)
@@ -33,6 +84,7 @@ int main(int argc, char **argv)
 	process_num = argc - 3;
 	array = (char ***)malloc(process_num * sizeof(char **));
 	path = (char **)malloc((process_num) * sizeof(char *));
+	pipes = (int **)malloc((process_num + 1) * sizeof(int *));
 	cmd_array = array;
 	y = 0;
 	while(x < argc - 1)
@@ -65,6 +117,7 @@ int main(int argc, char **argv)
 	i = 0;
 	while (i < process_num + 1)
 	{
+		pipes[i] = (int *)malloc(2 * sizeof(int));
 		if (pipe(pipes[i]) == -1)
 		{
 			perror("Pipe failed");
@@ -83,15 +136,7 @@ int main(int argc, char **argv)
 		}
 		if (pids[i] == 0)
 		{
-			j = 0;
-			while (j < process_num + 1)
-			{
-				if (i != j)
-					close(pipes[j][0]);
-				if (i + 1 != j)
-					close(pipes[j][1]);
-				j++;
-			}
+			ft_close_unused_pipes(i, pipes, process_num, 'c');
 			dup2(pipes[i][0], 0);
 			dup2(pipes[i+1][1], 1);
 			n = execve(*path, *cmd_array, (void *)0);
@@ -105,57 +150,15 @@ int main(int argc, char **argv)
 		path++;
 		i++;
 	}
-	j = 0;
-	while (j < process_num + 1)
-	{
-		if (j != process_num)
-			close(pipes[j][0]);
-		if (j != 0)
-			close(pipes[j][1]);
-		j++;
-	}
+	ft_close_unused_pipes(i, pipes, process_num, 'p');
 
 	input_fd = open("infile", O_RDONLY);
-	line = malloc(1);
-	while(line)
-	{
-		free(line);
-		line = NULL;
-		line = get_next_line(input_fd);
-		if (line != NULL)
-		{
-			printf("Main process sent %s\n", line);
-			if (write(pipes[0][1], line, ft_strlen(line)) == -1)
-			{
-				perror("Write failed");
-				exit(EXIT_FAILURE);
-			}
-		}
-	}
-	if (close(pipes[0][1]) == -1)
-		perror("Close failed");
-	
-	output_fd = open("outfile", O_RDWR | O_TRUNC | O_CREAT, 0777);
-	line = malloc(1);
-	while(line)
-	{
-		free(line);
-		line = NULL;
-		line = get_next_line(pipes[process_num][0]);
-		if (line != NULL)
-		{
-			if (write(output_fd, line, ft_strlen(line)) == -1)
-			{
-				perror("Write failed");
-				exit(EXIT_FAILURE);
-			}
-		}
-	}
-	close(output_fd);
-	if (close(pipes[process_num][0]) == -1)
-		perror("Close failed");
-	i = 0;
+	ft_read_in_loop(input_fd, pipes[0][1]);
 
+	output_fd = open("outfile", O_RDWR | O_TRUNC | O_CREAT, 0777);
+	ft_read_in_loop(pipes[process_num][0], output_fd);
+
+	i = 0;
 	while (i < process_num)
 	{
 		wait(NULL);
