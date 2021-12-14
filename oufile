@@ -1,0 +1,11 @@
+LIMITER
+get_next_line.c
+get_next_line.h
+get_next_line_utils.c
+infile
+libft.a
+libft.h
+oufile
+outfile
+pipex
+pipex.c
