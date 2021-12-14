@@ -14,8 +14,9 @@ int main(int argc, char **argv)
 	int n;
 	int process_num;
 	int pids[argc - 3];
-	char	**cmd1;
-	char	**cmd2;
+	char	**path;
+	char	***cmd_array;
+	char	***array;
 	int 	input_fd;
 	int 	output_fd;
 	int 	new_out_fd;
@@ -23,14 +24,44 @@ int main(int argc, char **argv)
 	char	buff[100];
 	int		read_result;
 
-	 if (argc < 5)
+	if (argc < 5)
 	{
 		ft_putstr_fd("The number of arguments should be at least 4\n", 2);
-		return (0);
+		exit(EXIT_FAILURE);
 	}
+	x = 2;
 	process_num = argc - 3;
-	cmd1 = ft_split(argv[2], ' ');
-	cmd2 = ft_split(argv[3], ' ');
+	array = (char ***)malloc(process_num * sizeof(char **));
+	path = (char **)malloc((process_num) * sizeof(char *));
+	cmd_array = array;
+	y = 0;
+	while(x < argc - 1)
+	{
+		array[y] = ft_split(argv[x], ' ');
+		path[y] = ft_strjoin("/usr/bin/", *array[y]);
+		if (access(path[y], F_OK) == -1)
+		{
+			free(path[y]);
+			path[y] = NULL;
+			path[y] = ft_strjoin("/bin/", *array[y]);
+			if (access(path[y], F_OK) == -1)
+			{
+				perror("Access failed");
+				return (0);
+			}
+		}
+		x++;
+		y++;
+	}
+	printf("%s\n", path[0]);
+	printf("%s\n", path[1]);
+	printf("%s\n", path[2]);
+	printf("%s\n", cmd_array[0][0]);
+	printf("%s\n", cmd_array[0][1]);
+	printf("%s\n", cmd_array[1][0]);
+	printf("%s\n", cmd_array[1][1]);
+	printf("%s\n", cmd_array[2][0]);
+	printf("%s\n", cmd_array[2][1]);
 	i = 0;
 	while (i < process_num + 1)
 	{
@@ -63,13 +94,15 @@ int main(int argc, char **argv)
 			}
 			dup2(pipes[i][0], 0);
 			dup2(pipes[i+1][1], 1);
-			n = execve("/usr/bin/wc", cmd1, (void *)0);
+			n = execve(*path, *cmd_array, (void *)0);
 			if (n == -1)
 				perror("Execve failed");
 			close(pipes[i][0]);
 			close(pipes[i + 1][1]);
 			return (0);
 		}
+		cmd_array++;
+		path++;
 		i++;
 	}
 	j = 0;
@@ -101,19 +134,28 @@ int main(int argc, char **argv)
 	}
 	if (close(pipes[0][1]) == -1)
 		perror("Close failed");
-	line = malloc(100);
-	output_fd = open("outfile", O_RDWR | O_CREAT, 0777);
-	if (read(pipes[process_num][0], line, 100) == -1)
+	
+	output_fd = open("outfile", O_RDWR | O_TRUNC | O_CREAT, 0777);
+	line = malloc(1);
+	while(line)
 	{
-		perror("Main Read failed");
-		exit(EXIT_FAILURE);
+		free(line);
+		line = NULL;
+		line = get_next_line(pipes[process_num][0]);
+		if (line != NULL)
+		{
+			if (write(output_fd, line, ft_strlen(line)) == -1)
+			{
+				perror("Write failed");
+				exit(EXIT_FAILURE);
+			}
+		}
 	}
-	write(output_fd, line, ft_strlen(line));
-	printf("Main recieved the final result. It is %s\n", line);
 	close(output_fd);
 	if (close(pipes[process_num][0]) == -1)
 		perror("Close failed");
 	i = 0;
+
 	while (i < process_num)
 	{
 		wait(NULL);

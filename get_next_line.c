@@ -88,7 +88,7 @@ char	*ft_filling_line(char **buf, int fd, int index)
 			buf[fd] = ft_substr_free(buf[fd], index + 1, ft_strlen(buf[fd]));
 	}
 	if (index == -1)
-		line = ft_strjoin(line, get_next_line(fd));
+		line = ft_strjoin_free(line, get_next_line(fd));
 	return (line);
 }
 

@@ -63,7 +63,7 @@ size_t	ft_strlcat(char *dst, const char *src, size_t dstsize)
 	return (l + ft_strlen(src));
 }
 
-char	*ft_strjoin(char *s1, char *s2)
+char	*ft_strjoin_free(char *s1, char *s2)
 {
 	char	*new_str;
 	int		s2_size;
