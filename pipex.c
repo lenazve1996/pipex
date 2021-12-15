@@ -1,8 +1,27 @@
 #include "libft.h"
+#include <string.h>
 #include <stdio.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include "get_next_line.h"
+
+int	**ft_create_pipes(int process_num, int **pipes)
+{
+	int i;
+
+	i = 0;
+	while (i < process_num + 1)
+	{
+		pipes[i] = (int *)malloc(2 * sizeof(int));
+		if (pipe(pipes[i]) == -1)
+		{
+			perror("Pipe failed");
+			exit(EXIT_FAILURE);
+		}
+		i++;
+	}
+	return (pipes);
+}
 
 void	ft_close_unused_pipes(int i, int **pipes, int process_num, char c)
 {
@@ -33,16 +52,21 @@ void	ft_close_unused_pipes(int i, int **pipes, int process_num, char c)
 	}
 }
 
-void	ft_read_in_loop(int in_fd, int out_fd)
+void	ft_read_in_loop(int in_fd, int out_fd, int here_doc, char *stop_value)
 {
 	char	*line;
+	int		stop_flag;
+
+	stop_flag = 1;
 	line = malloc(1);
-	while (line)
+	//printf("%s\n", stop_flag);
+	while (line && stop_flag)
 	{
 		free(line);
 		line = NULL;
 		line = get_next_line(in_fd);
-		if (line != NULL)
+		printf("%d\n",ft_strncmp(line, stop_value, ft_strlen(line)));
+		if (here_doc == 0 && line != NULL)
 		{
 			if (write(out_fd, line, ft_strlen(line)) == -1)
 			{
@@ -50,6 +74,16 @@ void	ft_read_in_loop(int in_fd, int out_fd)
 				exit(EXIT_FAILURE);
 			}
 		}
+		else if (here_doc == 1 && (ft_strncmp(line, stop_value, ft_strlen(line)) != 0))
+		{
+			if (write(out_fd, line, ft_strlen(line)) == -1)
+			{
+				perror("Write failed");
+				exit(EXIT_FAILURE);
+			}
+		}
+		else if (here_doc == 1 && (ft_strncmp(line, stop_value, ft_strlen(line)) == 0))
+			stop_flag = 0;
 	}
 	if (close(in_fd) == -1)
 		perror("Close failed");
@@ -61,7 +95,6 @@ int main(int argc, char **argv)
 {
 	int **pipes;
 	int i;
-	int j;
 	int x;
 	int y;
 	int n;
@@ -72,16 +105,25 @@ int main(int argc, char **argv)
 	char	***array;
 	int 	input_fd;
 	int 	output_fd;
-	char	*line;
-	int		read_result;
+	int 	here_doc;
+	char	*stop_value;
 
 	if (argc < 5)
 	{
 		ft_putstr_fd("The number of arguments should be at least 4\n", 2);
 		exit(EXIT_FAILURE);
 	}
+	here_doc = 0;
 	x = 2;
 	process_num = argc - 3;
+	if (ft_strncmp(argv[1], "here_doc", ft_strlen(argv[1])) == 0)
+	{
+		printf("It's here_doc\n");
+		here_doc = 1;
+		x = 3;
+		process_num = argc - 4;
+		stop_value = ft_strjoin(argv[2], "\n");
+	}
 	array = (char ***)malloc(process_num * sizeof(char **));
 	path = (char **)malloc((process_num) * sizeof(char *));
 	pipes = (int **)malloc((process_num + 1) * sizeof(int *));
@@ -107,24 +149,14 @@ int main(int argc, char **argv)
 	}
 	printf("%s\n", path[0]);
 	printf("%s\n", path[1]);
-	printf("%s\n", path[2]);
+	//printf("%s\n", path[2]);
 	printf("%s\n", cmd_array[0][0]);
 	printf("%s\n", cmd_array[0][1]);
 	printf("%s\n", cmd_array[1][0]);
 	printf("%s\n", cmd_array[1][1]);
-	printf("%s\n", cmd_array[2][0]);
-	printf("%s\n", cmd_array[2][1]);
-	i = 0;
-	while (i < process_num + 1)
-	{
-		pipes[i] = (int *)malloc(2 * sizeof(int));
-		if (pipe(pipes[i]) == -1)
-		{
-			perror("Pipe failed");
-			exit(EXIT_FAILURE);
-		}
-		i++;
-	}
+	//printf("%s\n", cmd_array[2][0]);
+	//printf("%s\n", cmd_array[2][1]);
+	pipes = ft_create_pipes(process_num, pipes);
 	i = 0;
 	while (i < process_num)
 	{
@@ -141,7 +173,10 @@ int main(int argc, char **argv)
 			dup2(pipes[i+1][1], 1);
 			n = execve(*path, *cmd_array, (void *)0);
 			if (n == -1)
+			{
 				perror("Execve failed");
+				exit(EXIT_FAILURE);
+			}
 			close(pipes[i][0]);
 			close(pipes[i + 1][1]);
 			return (0);
@@ -151,12 +186,27 @@ int main(int argc, char **argv)
 		i++;
 	}
 	ft_close_unused_pipes(i, pipes, process_num, 'p');
+	if (here_doc == 1)
+	{
+		input_fd = 0;
+	}
+	else
+		input_fd = open(argv[1], O_RDONLY);
+	if (input_fd == -1)
+	{
+		perror("");
+		exit(EXIT_FAILURE);
+	}
+	ft_read_in_loop(input_fd, pipes[0][1], here_doc, stop_value);
 
-	input_fd = open("infile", O_RDONLY);
-	ft_read_in_loop(input_fd, pipes[0][1]);
-
-	output_fd = open("outfile", O_RDWR | O_TRUNC | O_CREAT, 0777);
-	ft_read_in_loop(pipes[process_num][0], output_fd);
+	if (here_doc == 1)
+	{
+		output_fd = open(argv[argc-1], O_RDWR | O_APPEND | O_CREAT, 0644);
+		here_doc = 0;
+	}
+	else
+		output_fd = open(argv[argc-1], O_RDWR | O_TRUNC | O_CREAT, 0644);
+	ft_read_in_loop(pipes[process_num][0], output_fd, here_doc, argv[2]);
 
 	i = 0;
 	while (i < process_num)
