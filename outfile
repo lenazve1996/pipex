@@ -1,5 +1,5 @@
   PID TTY           TIME CMD
-21560 ttys001    0:00.04 /bin/zsh -l
-43920 ttys001    0:00.19 ./pipex infile cat -e cat -e ps outfile
-43921 ttys001    0:00.00 (cat)
-43922 ttys001    0:00.00 (cat)
+69356 ttys000    0:00.08 /bin/zsh -l
+95291 ttys000    0:00.17 ./pipex infile cat -e cat -e ps outfile
+95292 ttys000    0:00.00 (cat)
+95293 ttys000    0:00.00 (cat)
