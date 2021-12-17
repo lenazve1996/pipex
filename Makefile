@@ -10,21 +10,21 @@ BONUS_OBJ	=	$(BONUS_SRC:.c=.o)
 
 override TMP_OBJ ?= $(OB)
 
-$(NAME) : $(SRC) libft/libft.h get_next_line.h pipex.h
-		$(CC) $(FLAGS) $< libft.a -o $@
+$(NAME) : $(TMP_OBJ) libft/libft.h get_next_line.h pipex.h
+		$(CC) $(FLAGS) $(TMP_OBJ) libft.a -o $@
 
 all : $(NAME)
 
-#%.o : %.c libft/libft.h get_next_line.h pipex.h
-#		$(CC) $(FLAGS) -c $< -o $@
+%.o : %.c libft/libft.h get_next_line.h pipex.h
+		$(CC) $(FLAGS) -c $< -o $@
 
 #bonus :
 #		@make TMP_OBJ="$(BONUS_OBJ)" all
 
-#clean:
-#		rm -f $(OB) $(BONUS_OBJ)
+clean:
+		rm -f $(OB) $(BONUS_OBJ)
 
-fclean:
+fclean: clean
 		rm -f $(NAME)
 
 re: fclean all
