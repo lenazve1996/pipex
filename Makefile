@@ -6,9 +6,7 @@ ft_putstr_fd.c ft_split.c ft_strncmp.c ft_substr.c ft_strjoin.c
 SRC_BONUS	= 	pipex_bonus.c reader_bonus.c get_next_line_utils.c get_next_line.c cleaner_bonus.c parser_bonus.c work_with_pipes_bonus.c \
 ft_putstr_fd.c ft_split.c ft_strncmp.c ft_substr.c ft_strjoin.c
 OB			=	$(SRC:.c=.o)
-
 BONUS_SRC	=	pipex_bonus.c 
-
 BONUS_OBJ	=	$(SRC_BONUS:.c=.o)
 
 override TMP_OBJ ?= $(OB)
