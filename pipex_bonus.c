@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   pipex.c                                            :+:      :+:    :+:   */
+/*   pipex_bonus.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ayajirob@student.42.fr <ayajirob>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/16 20:25:38 by ayajirob@st       #+#    #+#             */
-/*   Updated: 2021/12/18 17:01:09 by ayajirob@st      ###   ########.fr       */
+/*   Updated: 2021/12/18 16:37:04 by ayajirob@st      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "pipex.h"
+#include "pipex_bonus.h"
 #include "get_next_line.h"
 
 void	ft_error_processing(char *str)
@@ -68,15 +68,15 @@ int	main(int argc, char **argv)
 	int		cmd_index;
 	int		process_num;
 
-	ft_parsing(argc, &process_num, &cmd_index);
+	ft_parsing(argc, argv, &process_num, &cmd_index);
 	cmd_array = ft_parse_cmd(process_num, cmd_index, argv, argc);
 	path = ft_memory_alloc_path(process_num);
 	ft_parsing_path(cmd_array, path, process_num);
 	pipes = ft_create_pipes(process_num);
 	ft_make_child(process_num, pipes, path, cmd_array);
 	ft_close_unused_pipes_parent(pipes, process_num);
-	ft_read_input(argv[1], pipes[0][1]);
-	ft_write_output(argv[argc - 1], pipes[process_num][0]);
+	ft_read_input(argv[1], pipes[0][1], cmd_index, argv);
+	ft_write_output(argv[argc - 1], pipes[process_num][0], cmd_index);
 	ft_waiting_childs(process_num);
 	ft_free_mem(path, pipes, process_num, cmd_array);
 	return (0);

@@ -1,19 +1,19 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   parser.c                                           :+:      :+:    :+:   */
+/*   parser_bonus.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ayajirob@student.42.fr <ayajirob>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/17 20:00:09 by ayajirob@st       #+#    #+#             */
-/*   Updated: 2021/12/18 17:04:15 by ayajirob@st      ###   ########.fr       */
+/*   Updated: 2021/12/18 16:36:52 by ayajirob@st      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "pipex.h"
+#include "pipex_bonus.h"
 #include "get_next_line.h"
 
-void	ft_parsing(int argc, int *process_num, int *cmd_index)
+void	ft_parsing(int argc, char **argv, int *process_num, int *cmd_index)
 {
 	if (argc < 5)
 	{
@@ -22,6 +22,11 @@ void	ft_parsing(int argc, int *process_num, int *cmd_index)
 	}
 	*cmd_index = 2;
 	*process_num = argc - 3;
+	if (ft_strncmp(argv[1], "here_doc", ft_strlen(argv[1])) == 0)
+	{
+		*cmd_index = 3;
+		*process_num = argc - 4;
+	}
 }
 
 char	***ft_parse_cmd(int process_num, int cmd_index, char **argv, int argc)
