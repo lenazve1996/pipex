@@ -6,7 +6,7 @@
 /*   By: ayajirob@student.42.fr <ayajirob>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/17 19:44:50 by ayajirob@st       #+#    #+#             */
-/*   Updated: 2021/12/17 20:12:40 by ayajirob@st      ###   ########.fr       */
+/*   Updated: 2021/12/18 13:17:35 by ayajirob@st      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,6 @@
 # define PIPEX_H
 
 # include "get_next_line.h"
-# include "libft.h"
 # include <string.h>
 # include <stdio.h>
 # include <fcntl.h>
@@ -34,6 +33,10 @@ void	ft_read_input(char *infile, int first_pipe, int cmd_index, char **argv);
 void	ft_write_output(char *outfile, int last_pipe, int cmd_index);
 void	ft_waiting_childs(int process_num);
 void	ft_error_processing(char *str);
-int		main(int argc, char **argv);
+char	*ft_strjoin(char const *s1, char const *s2);
+char	**ft_split(char const *s, char c);
+void	ft_putstr_fd(char *s, int fd);
+int		ft_strncmp(const char *s1, const char *s2, size_t n);
+char	*ft_substr(char const *s, unsigned int start, size_t len);
 
 #endif
