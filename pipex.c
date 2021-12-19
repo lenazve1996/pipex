@@ -6,7 +6,7 @@
 /*   By: ayajirob@student.42.fr <ayajirob>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/16 20:25:38 by ayajirob@st       #+#    #+#             */
-/*   Updated: 2021/12/19 16:11:29 by ayajirob@st      ###   ########.fr       */
+/*   Updated: 2021/12/19 19:18:34 by ayajirob@st      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,11 +51,12 @@ void	ft_make_child(int proc_num, int **pipes, char **path, char ***cmd_arr)
 void	ft_waiting_childs(int process_num)
 {
 	int	i;
+	int	status;
 
 	i = 0;
 	while (i < process_num)
 	{
-		wait(NULL);
+		wait(&status);
 		i++;
 	}
 }

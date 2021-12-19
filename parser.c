@@ -6,7 +6,7 @@
 /*   By: ayajirob@student.42.fr <ayajirob>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/17 20:00:09 by ayajirob@st       #+#    #+#             */
-/*   Updated: 2021/12/19 16:17:48 by ayajirob@st      ###   ########.fr       */
+/*   Updated: 2021/12/19 18:39:07 by ayajirob@st      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,8 +58,8 @@ void	ft_parsing_path(char ***array, char **path, int process_num)
 {
 	int	y;
 
-	y = 0;
-	while (y < process_num)
+	y = -1;
+	while (++y < process_num)
 	{
 		if (array[y][0] == '\0')
 			ft_putstr_fd("None of the arguments should be empty\n", 2);
@@ -71,7 +71,6 @@ void	ft_parsing_path(char ***array, char **path, int process_num)
 			if (access(path[y], F_OK) == -1)
 			{
 				free(path[y]);
-				path[y] = NULL;
 				path[y] = ft_strjoin("/bin/", *array[y]);
 				if (path[y] == NULL)
 					ft_error_processing("Malloc failed for path");
@@ -81,6 +80,5 @@ void	ft_parsing_path(char ***array, char **path, int process_num)
 		}
 		else
 			path[y] = ft_substr(*array[y], 0, ft_strlen(*array[y]));
-		y++;
 	}
 }
