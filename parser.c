@@ -6,7 +6,7 @@
 /*   By: ayajirob@student.42.fr <ayajirob>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/17 20:00:09 by ayajirob@st       #+#    #+#             */
-/*   Updated: 2021/12/18 17:04:15 by ayajirob@st      ###   ########.fr       */
+/*   Updated: 2021/12/19 16:17:48 by ayajirob@st      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,19 +63,24 @@ void	ft_parsing_path(char ***array, char **path, int process_num)
 	{
 		if (array[y][0] == '\0')
 			ft_putstr_fd("None of the arguments should be empty\n", 2);
-		path[y] = ft_strjoin("/usr/bin/", *array[y]);
-		if (path[y] == NULL)
-			ft_error_processing("Malloc failed for path");
-		if (access(path[y], F_OK) == -1)
+		if (access(*array[y], F_OK) == -1)
 		{
-			free(path[y]);
-			path[y] = NULL;
-			path[y] = ft_strjoin("/bin/", *array[y]);
+			path[y] = ft_strjoin("/usr/bin/", *array[y]);
 			if (path[y] == NULL)
 				ft_error_processing("Malloc failed for path");
 			if (access(path[y], F_OK) == -1)
-				ft_error_processing("Access failed");
+			{
+				free(path[y]);
+				path[y] = NULL;
+				path[y] = ft_strjoin("/bin/", *array[y]);
+				if (path[y] == NULL)
+					ft_error_processing("Malloc failed for path");
+				if (access(path[y], F_OK) == -1)
+					perror("Command not found");
+			}
 		}
+		else
+			path[y] = ft_substr(*array[y], 0, ft_strlen(*array[y]));
 		y++;
 	}
 }

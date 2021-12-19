@@ -6,7 +6,7 @@
 /*   By: ayajirob@student.42.fr <ayajirob>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/17 20:02:20 by ayajirob@st       #+#    #+#             */
-/*   Updated: 2021/12/17 20:02:43 by ayajirob@st      ###   ########.fr       */
+/*   Updated: 2021/12/19 15:36:59 by ayajirob@st      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,12 +41,12 @@ void	ft_close_unused_pipes_child(int i, int **pipes, int process_num)
 		if (i != j)
 		{
 			if (close(pipes[j][0]) == -1)
-				ft_error_processing("Close failed");
+				ft_error_processing("3Close failed");
 		}
 		if (i + 1 != j)
 		{
 			if (close(pipes[j][1]) == -1)
-				ft_error_processing("Close failed");
+				ft_error_processing("4Close failed");
 		}
 		j++;
 	}
@@ -62,12 +62,12 @@ void	ft_close_unused_pipes_parent(int **pipes, int process_num)
 		if (j != process_num)
 		{
 			if (close(pipes[j][0]) == -1)
-				ft_error_processing("Close failed");
+				ft_error_processing("5Close failed");
 		}
 		if (j != 0)
 		{
 			if (close(pipes[j][1]) == -1)
-				ft_error_processing("Close failed");
+				ft_error_processing("6Close failed");
 		}
 		j++;
 	}

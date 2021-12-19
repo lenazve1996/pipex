@@ -6,7 +6,7 @@
 /*   By: ayajirob@student.42.fr <ayajirob>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/16 20:25:38 by ayajirob@st       #+#    #+#             */
-/*   Updated: 2021/12/18 17:01:09 by ayajirob@st      ###   ########.fr       */
+/*   Updated: 2021/12/19 16:11:29 by ayajirob@st      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,8 +37,8 @@ void	ft_make_child(int proc_num, int **pipes, char **path, char ***cmd_arr)
 				ft_error_processing("Dup2 failed");
 			if (execve(*path, *cmd_arr, (void *)0) == -1)
 			{
-				if (close(pipes[i][0] == -1) || close(pipes[i + 1][1] == -1))
-					ft_error_processing("Close failed");
+				if (close(pipes[i][0]) == -1 || close(pipes[i + 1][1]) == -1)
+					ft_error_processing("1Close failed");
 				ft_error_processing("Execve failed");
 			}
 		}

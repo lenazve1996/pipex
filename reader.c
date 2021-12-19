@@ -6,7 +6,7 @@
 /*   By: ayajirob@student.42.fr <ayajirob>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/17 20:05:18 by ayajirob@st       #+#    #+#             */
-/*   Updated: 2021/12/18 17:27:16 by ayajirob@st      ###   ########.fr       */
+/*   Updated: 2021/12/19 15:36:35 by ayajirob@st      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,13 +29,15 @@ void	ft_read_in_loop(int in_fd, int out_fd)
 		}
 	}
 	if ((close(in_fd) == -1) || (close(out_fd) == -1))
-		ft_error_processing("Close failed");
+		ft_error_processing("2Close failed");
 }
 
 void	ft_read_input(char *infile, int first_pipe)
 {
 	int		input_fd;
 
+	if (access(infile, F_OK) == -1)
+		ft_error_processing("");
 	input_fd = open(infile, O_RDONLY);
 	if (input_fd == -1)
 		ft_error_processing("");
